@@ -10,8 +10,8 @@ from contextlib import ExitStack
 from datetime import datetime
 from datetime import timezone
 from weakref import WeakKeyDictionary
-
 import sqlalchemy as sa
+import flask_sqlalchemy
 from alembic import autogenerate
 from alembic import util
 from alembic.config import Config
@@ -766,6 +766,15 @@ class Alembic:
         script = self.produce_migrations()
         assert script.upgrade_ops is not None
         return script.upgrade_ops.as_diffs()  # type: ignore[no-any-return]
+
+    @property
+    def flask_sqlalchemy_db(self):
+        ext_version = tuple(int(_) for _ in flask_sqlalchemy.__version__.split(".")[:3])
+
+        if ext_version >= (3, 1, 0):
+            return current_app.extensions["sqlalchemy"]
+
+        return current_app.extensions["sqlalchemy"].db
 
 
 @dataclasses.dataclass
