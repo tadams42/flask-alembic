@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import importlib
 import logging
 import os
 import shutil
@@ -769,7 +770,10 @@ class Alembic:
 
     @property
     def flask_sqlalchemy_db(self):
-        ext_version = tuple(int(_) for _ in flask_sqlalchemy.__version__.split(".")[:3])
+        ext_version = tuple(
+            int(_)
+            for _ in importlib.metadata.version("flask-sqlalchemy").split(".")[:3]
+        )
 
         if ext_version >= (3, 1, 0):
             return current_app.extensions["sqlalchemy"]
